@@ -3,7 +3,7 @@
 一个基于 **RAG + 对话树 + Agent** 的智能知识探索助手，目标是从零构建一个完整的 AI 应用后端，而不是简单调用 LLM API
 
 > 本项目按开发阶段逐步构建，每天新增一批能力，README 同步更新。
-> 当前进度：**Day 1 · 项目骨架 + 统一配置 + 异步数据库初始化** 
+> 当前进度：**Day 1 项目骨架 + 统一配置 + 异步数据库初始化** 
 
 ## 技术栈
 
@@ -50,6 +50,16 @@ my-rag/
         ├── ingestion/        # 文档处理
         └── schemas/          # API 模型
 ```
+## 数据模型（5 张表）
+
+| 表 | 职责 |
+|---|---|
+| `conversations` | 对话（树根锚点 + 最大深度） |
+| `messages` | 消息节点（`parent_message_id` 自引用形成对话树，含 `depth`/`branch_path` 列） |
+| `context_snapshots` | 会话快照（摘要 + 关键引用，分支上下文继承用） |
+| `documents` | 上传的源文档（去重哈希 + 入库状态机） |
+| `chunks` | 文档切块文本（pg_trgm 关键词索引 + 向量外链到 Milvus） |
+
 
 ## 环境要求
 
@@ -76,17 +86,17 @@ uvicorn app.main:app --reload
 - 健康检查：http://127.0.0.1:8000/api/v1/health → {"status":"ok"}
 - 接口文档：http://127.0.0.1:8000/docs
 
-## 当前进度
-
+## 当前进度- 
 - ✅ FastAPI 项目骨架与分层
 - ✅ 健康检查接口（`/api/v1/health`）
 - ✅ 统一配置入口（环境变量 > .env > 默认值）
 - ✅ SQLAlchemy 2.0 异步引擎 + 会话工厂
 - ✅ 启动自动建库：`pg_trgm` 扩展
 - ✅ Git 初始化与 GitHub 上传
+- ✅ FastAPI 项目骨架与分层
+- ✅ 健康检查接口
+- ✅ 统一配置入口（环境变量 > .env > 默认值）
+- ✅ SQLAlchemy 2.0 异步引擎 + 会话工厂
+- ✅ 数据模型：5 张表（对话树 + 文档入库，D1 加列、D5 砍 blocks）
+- ✅ Alembic 迁移：alembic upgrade head 建库
 
-## 后续计划
-
-- Day 2：数据模型（6 张表）+ Alembic 迁移
-- Day 3-5：RAG 链路（解析 / 向量化 / Milvus / 检索 / 问答 SSE）
-- Day 6-11：Conversation Tree、Agent、工程化、前端、演示
