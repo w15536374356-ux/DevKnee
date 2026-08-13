@@ -1,10 +1,10 @@
-# 数据库初始化：先建 pg_trgm 扩展
 import asyncio
 import logging
 
 from sqlalchemy import text
 
-from app.storage.db import engine
+import app.storage.models
+from app.storage.db import Base, engine
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 async def init_db() -> None:
     async with engine.begin() as conn:
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
+        await conn.run_sync(Base.metadata.create_all)
     logger.info("database schema ensured")
 
 

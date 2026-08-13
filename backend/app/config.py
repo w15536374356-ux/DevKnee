@@ -61,6 +61,6 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
 
-@lru_cache
+@lru_cache #调用一次,保存为缓存,下次使用直接调用,优化
 def get_settings() -> Settings:
     return Settings()
