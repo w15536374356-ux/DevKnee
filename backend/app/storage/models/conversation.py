@@ -1,28 +1,29 @@
-from mailbox import Message
+from __future__ import annotations
+
 from typing import Optional
 import uuid
 
 from sqlalchemy import JSON, ForeignKey, Index, Integer, String, Text, Uuid
 
-from backend.app.storage.db import Base
-from backend.app.storage.models.enums import MessageRole
-from backend.app.storage.models.mixins import TimestampMixin
+from app.storage.db import Base
+from app.storage.models.enums import MessageRole
+from app.storage.models.mixins import TimestampMixin
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Conversation(TimestampMixin,Base):
     __tablename__="conversation"
 
 
-    id:Mapped[uuid.UUID]=mapped_column(Uuid,primary_key=True,default=uuid.uuid4),
-    title:Mapped[str]=mapped_column(String(200),nullable=False,default="新对话")
-    root_message_id:Mapped[Optional[uuid.UUID]]=mapped_column(
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(String(200), nullable=False, default="新对话")
+    root_message_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         ForeignKey(
             "messages.id",
             use_alter=True,
-            ondeleta="SET NULL",
+            ondelete="SET NULL",
             name="fk_conversation_root_name",
         ),
-        nullable=False,
+        nullable=True,
     )
     max_depth:Mapped[int]=mapped_column(Integer,nullable=False,default=3)
     messages:Mapped[list[Message]]=relationship(
@@ -43,7 +44,7 @@ class Message(TimestampMixin, Base):
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     conversation_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("conversations.id", ondelete="CASCADE"),
+        ForeignKey("conversation.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -84,7 +85,7 @@ class ContextSnapshot(TimestampMixin, Base):
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     conversation_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("conversations.id", ondelete="CASCADE"), nullable=False, index=True
+        ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False, index=True
     )
     anchor_message_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         ForeignKey("messages.id", ondelete="SET NULL"), nullable=True

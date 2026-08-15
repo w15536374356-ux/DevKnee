@@ -14,3 +14,9 @@ class IngestionStatus(str, Enum):
     INDEXING = "indexing"
     READY = "ready"
     FAILED = "failed"
+
+
+class AccessLevel(str,Enum):
+    PUBLIC="public"
+    INTERNAL = "internal"
+    CONFIDENTIAL = "confidential"

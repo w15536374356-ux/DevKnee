@@ -18,7 +18,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.storage.db import Base
 from app.storage.models.enums import IngestionStatus
 from app.storage.models.mixins import TimestampMixin
-
+from app.storage.models.enums import AccessLevel, IngestionStatus
 
 class Document(TimestampMixin, Base):
     __tablename__ = "documents"
@@ -36,9 +36,9 @@ class Document(TimestampMixin, Base):
 
     __table_args__ = (UniqueConstraint("doc_hash", name="uq_documents_doc_hash"),)
 
-    chunks: Mapped[list[Chunk]] = relationship(
-        "Chunk", back_populates="document", cascade="all, delete-orphan"
-    )
+    chunks: Mapped[list[Chunk]] = relationship("Chunk", back_populates="document", cascade="all, delete-orphan")
+    scope: Mapped[str] = mapped_column(String(50), nullable=False, default="default")
+    access_level: Mapped[str] = mapped_column(String(20), nullable=False, default=AccessLevel.INTERNAL.value)
 
 
 class Chunk(TimestampMixin, Base):
