@@ -1,3 +1,16 @@
+#缓存
 __pycache__/
+
+#虚拟环境
 .venv/
 .env
+
+#个人工具箱
+cheat-sheet.md
+
+#docker相关
+docker-compose.yml
+Dockerfile
+
+#个人配置
+.vscode/
